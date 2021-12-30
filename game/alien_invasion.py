@@ -16,11 +16,11 @@ class AlienInvasion:
 
         self.settings = Settings()
 
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        self.settings.screen_width = self.screen.get_rect().width
-        self.settings.screen_height = self.screen.get_rect().height
-
+        # self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        # self.settings.screen_width = self.screen.get_rect().width
+        # self.settings.screen_height = self.screen.get_rect().height
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
+
         pygame.display.set_caption("Alien Invasion")
 
         # Create Player Ship
@@ -42,7 +42,7 @@ class AlienInvasion:
         number_rows = available_space_y // (2 * alien_height)
 
         for row_number in range(number_rows):
-        # Создание первого ряда пришельцев.
+            # Создание первого ряда пришельцев.
             for alien_number in range(number_aliens_x):
                 self._create_alien(alien_number, row_number)
 
@@ -56,12 +56,17 @@ class AlienInvasion:
         alien.rect.y = alien_height + 2 * alien_height * row_number
         self.aliens.add(alien)
 
+    def _update_aliens(self):
+        self._check_fleet_edges()
+        self.aliens.update()
+
     def run_game(self):
         """Запуск основного цикла игры."""
         while True:
             self._check_events()
             self.ship.update()
             self._update_bullets()
+            self._update_aliens()
             self.bullets.update()
             self._update_screen()
             # При каждом проходе цикла перерисовывается экран.
@@ -71,6 +76,20 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
                 print(len(self.bullets))
+
+        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+
+    def _check_fleet_edges(self):
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+
+    def _change_fleet_direction(self):
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+
+        self.settings.fleet_direction *= -1
 
     def _check_events(self):
         # Отслеживание событий клавиатуры и мыши.

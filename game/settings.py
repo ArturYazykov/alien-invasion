@@ -8,7 +8,6 @@ class Settings:
         self.screen_height = 800
         self.bg_color = (250, 50, 150)
 
-
         # Настройки корабля
         self.ship_speed = 5
 
@@ -22,4 +21,6 @@ class Settings:
         self.alien_width = 70
         self.alien_height = 80
 
-
+        self.alien_speed = 0.90
+        self.fleet_drop_speed = 10
+        self.fleet_direction = 1
