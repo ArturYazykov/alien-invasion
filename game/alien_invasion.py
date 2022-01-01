@@ -1,7 +1,9 @@
 import sys
+from time import sleep
 import pygame
 
 from game.settings import Settings
+from game.game_stats import GameStats
 from game.ship import Ship
 from game.bullet import Bullet
 from game.alian import Alien
@@ -22,6 +24,7 @@ class AlienInvasion:
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
 
         pygame.display.set_caption("Alien Invasion")
+        self.stats = GameStats(self)
 
         # Create Player Ship
         self.ship = Ship(self)
@@ -30,6 +33,20 @@ class AlienInvasion:
         # Create aliens fleet
         self.aliens = pygame.sprite.Group()
         self._create_fleet()
+
+    def _ship_hit(self):
+        self.stats.ships_left -= 1
+
+        self.aliens.empty()  #
+        self.bullets.empty()
+
+        self._create_fleet()
+        self.ship.center_ship()  #
+
+        self.screen.fill((255, 0, 0))
+        pygame.display.flip()
+        sleep(1.5)
+        self.screen.fill(self.settings.bg_color)
 
     def _create_fleet(self):
         alien = Alien(self)
@@ -59,6 +76,17 @@ class AlienInvasion:
     def _update_aliens(self):
         self._check_fleet_edges()
         self.aliens.update()
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            self._ship_hit()
+            print("Ship bo-bo :(")
+        self._check_aliens_bottom()
+
+    def _check_aliens_bottom(self):
+        screen_rect = self.screen.get_rect()
+        for aliens in self.aliens.sprites():
+            if aliens.rect.bottom >= screen_rect.bottom:
+                self._ship_hit()
+                break
 
     def run_game(self):
         """Запуск основного цикла игры."""
@@ -75,7 +103,13 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
-                print(len(self.bullets))
+
+        self._check_bullet_alien_collision()
+
+    def _check_bullet_alien_collision(self):
+        if not self.aliens:
+            self.bullets.empty()
+            self._create_fleet()
 
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
 
@@ -131,8 +165,6 @@ class AlienInvasion:
             bullet.draw_bullet()
 
         self.aliens.draw(self.screen)
-
-        pygame.display.flip()
 
         # Отображение последнего прорисованного экрана.
         pygame.display.flip()

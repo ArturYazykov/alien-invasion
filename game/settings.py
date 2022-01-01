@@ -4,23 +4,25 @@ class Settings:
     def __init__(self):
         """Инициализирует настройки игры."""
         # Параметры экрана
-        self.screen_width = 1200
-        self.screen_height = 800
+        self.screen_width = 1920
+        self.screen_height = 1080
         self.bg_color = (250, 50, 150)
+        # self.screen_img_path = 'images/edinorog.bmp'
 
         # Настройки корабля
         self.ship_speed = 5
+        self.ship_limit = 3
 
         # Параметры снаряда
         self.bullet_speed = 3
-        self.bullet_width = 167
-        self.bullet_height = 100
+        self.bullet_width = 160
+        self.bullet_height = 90
         self.bullet_img_path = 'images/bullet.png'
         self.bullets_allowed = 7
 
         self.alien_width = 70
         self.alien_height = 80
 
-        self.alien_speed = 0.90
-        self.fleet_drop_speed = 10
+        self.alien_speed = 3
+        self.fleet_drop_speed = 20
         self.fleet_direction = 1
