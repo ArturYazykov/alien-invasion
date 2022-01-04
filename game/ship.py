@@ -1,21 +1,24 @@
 import pygame
+from pygame.sprite import Sprite
 
 
-class Ship:
+class Ship(Sprite):
     """Класс для управления пингвином."""
 
-    def __init__(self, ai_game):
+    def __init__(self, ai_game, w=244, h=207):
         """Инициализирует пингвина и задает его начальную позицию."""
+        super().__init__()
         self.screen = ai_game.screen
         self.settings = ai_game.settings
         self.screen_rect = ai_game.screen.get_rect()
         # Загружает изображение корабля
         self.image = pygame.image.load('images/ship.png')
+
+        self.image = pygame.transform.scale(self.image, (w, h))
+
         self.rect = self.image.get_rect()
-        #
         self.rect.midbottom = self.screen_rect.midbottom
 
-        #
         self.x = float(self.rect.x)
 
         # Флаги пермещения
